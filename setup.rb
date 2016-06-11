@@ -14,7 +14,8 @@ brews.each do |brew|
 end
 
 # casks
-casks = %w(alfred atom bartender dash firefox google-chrome iterm2 kaleidoscope postico textmate sequel-pro macvim virtualbox)
+casks = %w(alfred atom bartender dash firefox google-chrome iterm2 kaleidoscope postico textmate
+           sequel-pro macvim virtualbox twitter)
 casks.each do |cask|
   brew_install(cask, true)
 end
