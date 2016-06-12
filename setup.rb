@@ -14,8 +14,9 @@ brews.each do |brew|
 end
 
 # casks
-casks = %w(alfred atom bartender dash firefox google-chrome iterm2 kaleidoscope postico textmate
-           sequel-pro macvim virtualbox twitterrific)
+casks = %w(alfred atom bartender caffeine dash firefox google-chrome iterm2 kaleidoscope postico textmate
+           sequel-pro macvim lastfm virtualbox twitterrific)
+
 casks.each do |cask|
   brew_install(cask, true)
 end
@@ -29,10 +30,12 @@ puts %x(sh -c "$(curl -fsSl https://raw.githubusercontent.com/robbyrussell/oh-my
 # bundler
 puts %x(gem install bundler)
 
-def brew_install(brew, cask=nil)
-  if cask
-    %x(brew cask install Caskroom/cask/#{brew})
-  else
-    %x(brew install #{brew})
+BEGIN {
+  def brew_install(brew, cask=nil)
+    if cask
+      %x(brew cask install Caskroom/cask/#{brew})
+    else
+      %x(brew install #{brew})
+    end
   end
-end
+}
