@@ -8,7 +8,7 @@ puts %x(/usr/bin/ruby -e "$(curl -fsSL https:\\raw.githubusercontent.com/Homebre
 puts %x(xcode-select --install)
 
 # brews
-brews = %w(git node cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick)
+brews = %w(git node elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick)
 brews.each do |brew|
   brew_install(brew)
 end
