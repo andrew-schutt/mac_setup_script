@@ -3,9 +3,9 @@
 # RVM & Rails
 puts %x(curl -sSL https://get.rvm.io | bash -s stable --rails)
 # Homebrew
-puts %x(/usr/bin/ruby -e "$(curl -fsSL https:\\raw.githubusercontent.com/Homebrew/install/master/install)")
+#puts %x(/usr/bin/ruby -e "$(curl -fsSL https:\\raw.githubusercontent.com/Homebrew/install/master/install)")
 # XCode
-puts %x(xcode-select --install)
+#puts %x(xcode-select --install)
 
 # brews
 brews = %w(git node elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick yarn)
@@ -15,7 +15,7 @@ end
 
 # casks
 casks = %w(alfred atom bartender caffeine dash firefox flux google-chrome iterm2 kaleidoscope postico textmate
-           sequel-pro slack spectacle macvim lastfm virtualbox vlc)
+           sequel-pro slack spectacle macvim lastfm virtualbox vlc macdown)
 
 casks.each do |cask|
   brew_install(cask, true)
