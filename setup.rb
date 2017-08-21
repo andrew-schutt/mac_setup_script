@@ -9,14 +9,14 @@ puts %x(curl -sSL https://get.rvm.io | bash -s stable --rails)
 
 # brews
 brews = %w(git node elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick
-           yarn mono)
+           yarn mono exercism)
 brews.each do |brew|
   brew_install(brew)
 end
 
 # casks
 casks = %w(alfred atom bartender caffeine dash firefox flux google-chrome iterm2 kaleidoscope postico textmate
-           sequel-pro slack spectacle macvim virtualbox vlc webstorm tower)
+           sequel-pro slack spectacle macvim virtualbox vlc webstorm tower postman)
 
 casks.each do |cask|
   brew_install(cask, true)
