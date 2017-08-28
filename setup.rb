@@ -16,7 +16,7 @@ end
 
 # casks
 casks = %w(alfred atom bartender caffeine dash firefox flux google-chrome iterm2 kaleidoscope postico textmate
-           sequel-pro slack spectacle macvim virtualbox vlc webstorm tower postman)
+           sequel-pro slack spectacle macvim virtualbox vlc webstorm tower postman ngrok)
 
 casks.each do |cask|
   brew_install(cask, true)
