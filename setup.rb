@@ -8,8 +8,8 @@ puts %x(curl -sSL https://get.rvm.io | bash -s stable --rails)
 #puts %x(xcode-select --install)
 
 # brews
-brews = %w(git node elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick
-           yarn mono exercism)
+brews = %w(git elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick
+           mono exercism)
 brews.each do |brew|
   brew_install(brew)
 end
