@@ -9,7 +9,7 @@ puts %x(curl -sSL https://get.rvm.io | bash -s stable --rails)
 
 # brews
 brews = %w(git elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick
-           mono exercism)
+           mono exercism redis jq)
 brews.each do |brew|
   brew_install(brew)
 end
