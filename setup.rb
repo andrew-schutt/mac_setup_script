@@ -8,15 +8,15 @@ puts %x(curl -sSL https://get.rvm.io | bash -s stable --rails)
 #puts %x(xcode-select --install)
 
 # brews
-brews = %w(git elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions graphviz imagemagick
-           mono exercism redis jq tree)
+brews = %w(git elixir cowsay postgresql mysql mongodb heroku fortune zsh zs-completions
+           imagemagick exercism redis jq tree kotlin)
 brews.each do |brew|
   brew_install(brew)
 end
 
 # casks
-casks = %w(alfred atom bartender caffeine dash firefox flux google-chrome iterm2 kaleidoscope postico textmate
-           sequel-pro slack spectacle onyx macvim virtualbox vlc webstorm tower postman ngrok)
+casks = %w(alfred atom bartender caffeine firefox google-chrome iterm2 kaleidoscope postico
+           sequel-pro slack onyx vlc postman ngrok)
 
 casks.each do |cask|
   brew_install(cask, true)
