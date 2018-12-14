@@ -31,9 +31,8 @@ class Setup < Thor
     end
 
     puts 'installing all brews'
-    brews = %w(git elixir cowsay postgresql mysql mongodb heroku fortune zsh
-               zs-completions imagemagick exercism redis jq tree kotlin kubectl
-               cfssl)
+    brews = %w(git elixir cowsay postgresql mysql mongodb fortune zsh kubectl
+               zsh-completions imagemagick exercism redis jq tree kotlin cfssl)
     brews.each do |brew|
       brew_not_installed = run("brew info #{brew}", config).include? 'Not installed'
       if brew_not_installed then
