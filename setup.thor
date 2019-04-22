@@ -31,8 +31,8 @@ class Setup < Thor
     end
 
     puts 'installing all brews'
-    brews = %w(git elixir cowsay postgresql mysql mongodb fortune zsh kubectl
-               zsh-completions imagemagick exercism redis jq tree kotlin cfssl)
+    brews = %w(git elixir cowsay postgresql mysql fortune zsh kubectl
+               zsh-completions imagemagick exercism redis jq tree cfssl)
     brews.each do |brew|
       brew_not_installed = run("brew info #{brew}", config).include? 'Not installed'
       if brew_not_installed then
@@ -43,7 +43,7 @@ class Setup < Thor
     end
 
     puts 'installing all casks'
-    casks = %w(alfred atom bartender caffeine firefox google-chrome iterm2
+    casks = %w(alfred atom bartender firefox google-chrome iterm2
                kaleidoscope postico sequel-pro slack onyx vlc postman ngrok)
      casks.each do |cask|
        cask_not_installed = run("brew cask info #{cask}", config).include? 'Not installed'
