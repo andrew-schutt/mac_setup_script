@@ -4,10 +4,11 @@ class Setup < Thor
   desc 'kickoff', 'this will kickoff the all the steps for running through setup'
   def kickoff
     config = {capture: true, verbose: false}
+    ENV['PATH'] = "/opt/homebrew/bin:/usr/local/bin:#{ENV['PATH']}"
     puts 'lets get you all setup!'
 
     puts 'installing Homebrew'
-    homebrew_not_installed = run('brew --version', config).include?('command not found')
+    homebrew_not_installed = !system('which brew > /dev/null 2>&1')
     if homebrew_not_installed
       run('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"')
     else
@@ -15,7 +16,7 @@ class Setup < Thor
     end
 
     puts 'installing XCode tools'
-    xcode_not_installed = run('xcode-select --version', config).include? 'command not found'
+    xcode_not_installed = !system('xcode-select --version > /dev/null 2>&1')
     if xcode_not_installed
       run('xcode-select --install')
     else
