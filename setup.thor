@@ -25,9 +25,10 @@ class Setup < Thor
 
     puts 'installing all brews'
     brews = %w(
-      git git-lfs
+      git git-lfs git-delta
       rbenv ruby-build
-      node
+      nvm
+      direnv
       postgresql@16
       kubernetes-cli
       awscli terraform flyctl
@@ -35,7 +36,7 @@ class Setup < Thor
       starship
       lazydocker htop ctop
       neovim
-      httpie tldr
+      httpie tldr bat
       imagemagick jq tree watch
       gh yarn mas
       zsh-completions cowsay fortune
@@ -75,6 +76,79 @@ class Setup < Thor
       else
         say "cask #{cask} already installed"
       end
+    end
+
+    puts 'configuring rbenv'
+    zshrc = File.expand_path('~/.zshrc')
+    if File.read(zshrc).include?('rbenv init')
+      say 'rbenv already configured in .zshrc'
+    else
+      File.open(zshrc, 'a') { |f| f.puts "\neval \"$(rbenv init - zsh)\"" }
+      say 'rbenv added to .zshrc'
+    end
+
+    puts 'configuring starship'
+    if File.read(zshrc).include?('starship init')
+      say 'starship already configured in .zshrc'
+    else
+      File.open(zshrc, 'a') { |f| f.puts "\neval \"$(starship init zsh)\"" }
+      say 'starship added to .zshrc'
+    end
+
+    puts 'configuring fzf'
+    if File.read(zshrc).include?('fzf')
+      say 'fzf already configured in .zshrc'
+    else
+      run('$(brew --prefix)/opt/fzf/install --all --no-bash --no-fish')
+    end
+
+    puts 'configuring nvm'
+    nvm_config = <<~NVM
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \\. "/opt/homebrew/opt/nvm/nvm.sh"
+    NVM
+    if File.read(zshrc).include?('NVM_DIR')
+      say 'nvm already configured in .zshrc'
+    else
+      File.open(zshrc, 'a') { |f| f.puts "\n#{nvm_config}" }
+      say 'nvm added to .zshrc'
+    end
+    run('bash -c "source /opt/homebrew/opt/nvm/nvm.sh && nvm install --lts && nvm alias default node"')
+
+    puts 'configuring direnv'
+    direnv_hook = 'eval "$(direnv hook zsh)"'
+    if File.read(zshrc).include?('direnv hook')
+      say 'direnv already configured in .zshrc'
+    else
+      File.open(zshrc, 'a') { |f| f.puts "\n#{direnv_hook}" }
+      say 'direnv added to .zshrc'
+    end
+
+    puts 'configuring git-delta'
+    run('git config --global core.pager delta')
+    run('git config --global interactive.diffFilter "delta --color-only"')
+    run('git config --global delta.navigate true')
+    run('git config --global merge.conflictstyle diff3')
+    run('git config --global diff.colorMoved default')
+
+    puts 'installing latest ruby via rbenv'
+    latest_ruby = run("rbenv install -l 2>/dev/null | grep -v '-' | tail -1", config).strip
+    installed_rubies = run('rbenv versions --bare', config)
+    if installed_rubies.include?(latest_ruby)
+      say "ruby #{latest_ruby} already installed"
+    else
+      run("rbenv install #{latest_ruby}")
+    end
+    run("rbenv global #{latest_ruby}")
+
+    puts 'installing bundler'
+    run('gem install bundler')
+
+    puts 'installing oh-my-zsh'
+    if Dir.exist?(File.expand_path('~/.oh-my-zsh'))
+      say 'oh-my-zsh already installed'
+    else
+      run('sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"')
     end
 
     puts 'all finished up!'
