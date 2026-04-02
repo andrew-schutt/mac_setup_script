@@ -35,6 +35,7 @@ class Setup < Thor
       fzf fd ripgrep
       starship
       lazydocker htop ctop
+      docker docker-compose docker-machine
       neovim
       httpie tldr bat
       imagemagick jq tree watch
@@ -67,6 +68,7 @@ class Setup < Thor
       rectangle
       1password
       zoom
+      logitech-g-hub
       claude claude-code
     )
     casks.each do |cask|
@@ -150,32 +152,114 @@ class Setup < Thor
     else
       run('sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"')
     end
+
+    puts 'installing Nord iTerm2 color scheme'
+    nord_source = File.expand_path('../dotfiles/Nord.itermcolors', __dir__)
+    nord_dest = File.expand_path('~/Library/Application Support/iTerm2/ColorSchemes/Nord.itermcolors')
+    FileUtils.mkdir_p(File.dirname(nord_dest))
+    if File.exist?(nord_dest)
+      say 'Nord iTerm2 color scheme already installed'
+    elsif File.exist?(nord_source)
+      FileUtils.cp(nord_source, nord_dest)
+      say 'Nord color scheme copied — select it in iTerm2 → Preferences → Profiles → Colors'
+    else
+      say "Nord.itermcolors not found at #{nord_source}, skipping"
+    end
+
     puts 'configuring macOS defaults'
 
-    # Dock
-    run('defaults write com.apple.dock autohide -bool true')
-    run('defaults write com.apple.dock tilesize -int 36')
+    # Close any open System Preferences panes
+    run('osascript -e \'tell application "System Preferences" to quit\'')
 
-    # Finder
-    run('defaults write com.apple.finder ShowPathbar -bool true')
-    run('defaults write com.apple.finder ShowStatusBar -bool true')
-    run('defaults write NSGlobalDomain AppleShowAllExtensions -bool true')
+    # General UI/UX
+    run('sudo pmset -a standbydelay 86400')
+    run('sudo nvram SystemAudioVolume=" "')
+    run('defaults write com.apple.universalaccess reduceTransparency -bool true')
+    run('defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"')
+    run('defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true')
+    run('defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true')
+    run('defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true')
+    run('defaults write com.apple.LaunchServices LSQuarantine -bool false')
+    run('defaults write com.apple.CrashReporter DialogType -string "none"')
 
-    # Screenshots
-    run('defaults write com.apple.screencapture location ~/Desktop')
-    run('defaults write com.apple.screencapture type png')
-
-    # Keyboard
-    run('defaults write NSGlobalDomain KeyRepeat -int 2')
-    run('defaults write NSGlobalDomain InitialKeyRepeat -int 15')
+    # Trackpad, keyboard, Bluetooth
+    run('defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40')
+    run('defaults write NSGlobalDomain KeyRepeat -int 1')
+    run('defaults write NSGlobalDomain InitialKeyRepeat -int 10')
 
     # Mouse - enable right click
     run('defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode -string "TwoButton"')
     run('defaults write com.apple.driver.AppleHIDMouse Button2 -int 1')
 
+    # Screen
+    run('defaults write com.apple.screensaver askForPassword -int 1')
+    run('defaults write com.apple.screensaver askForPasswordDelay -int 0')
+    run('defaults write com.apple.screencapture location -string "${HOME}/Desktop"')
+    run('defaults write com.apple.screencapture type -string "png"')
+    run('defaults write com.apple.screencapture disable-shadow -bool true')
+
+    # Finder
+    run('defaults write com.apple.finder QuitMenuItem -bool true')
+    run('defaults write com.apple.finder DisableAllAnimations -bool true')
+    run('defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true')
+    run('defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true')
+    run('defaults write com.apple.finder ShowMountedServersOnDesktop -bool true')
+    run('defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true')
+    run('defaults write NSGlobalDomain AppleShowAllExtensions -bool true')
+    run('defaults write com.apple.finder ShowStatusBar -bool true')
+    run('defaults write com.apple.finder ShowPathbar -bool true')
+    run('defaults write com.apple.finder _FXShowPosixPathInTitle -bool true')
+    run('defaults write com.apple.finder _FXSortFoldersFirst -bool true')
+    run('defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"')
+    run('defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false')
+    run('defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true')
+    run('defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true')
+    run('chflags nohidden ~/Library')
+    run('sudo chflags nohidden /Volumes')
+
+    # Dock
+    run('defaults write com.apple.dock mouse-over-hilite-stack -bool true')
+    run('defaults write com.apple.dock tilesize -int 36')
+    run('defaults write com.apple.dock mineffect -string "scale"')
+    run('defaults write com.apple.dock minimize-to-application -bool true')
+    run('defaults write com.apple.dock show-process-indicators -bool true')
+    run('defaults write com.apple.dock expose-group-by-app -bool false')
+    run('defaults write com.apple.dock expose-animation-duration -float 0.15')
+    run('defaults write com.apple.dock autohide-delay -float 0.0')
+    run('defaults write com.apple.dock autohide-time-modifier -float 0.75')
+    run('defaults write com.apple.dock autohide -bool true')
+
+    # Safari
+    run('defaults write com.apple.Safari UniversalSearchEnabled -bool false')
+    run('defaults write com.apple.Safari SuppressSearchSuggestions -bool true')
+
+    # Terminal
+    run('defaults write com.apple.terminal StringEncodings -array 4')
+
+    # Activity Monitor
+    run('defaults write com.apple.ActivityMonitor OpenMainWindow -bool true')
+    run('defaults write com.apple.ActivityMonitor IconType -int 5')
+    run('defaults write com.apple.ActivityMonitor ShowCategory -int 0')
+    run('defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"')
+    run('defaults write com.apple.ActivityMonitor SortDirection -int 0')
+
+    # Mac App Store
+    run('defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true')
+    run('defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1')
+    run('defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1')
+
+    # Photos
+    run('defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true')
+
+    # Chrome
+    run('defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false')
+    run('defaults write com.google.Chrome DisablePrintPreview -bool true')
+    run('defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true')
+
     # Restart affected services
-    run('killall Dock')
-    run('killall Finder')
+    %w[ActivityMonitor Dock Finder Safari SystemUIServer].each do |app|
+      run("killall #{app} 2>/dev/null || true")
+    end
 
     puts 'all finished up!'
   end
