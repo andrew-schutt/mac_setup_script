@@ -150,6 +150,32 @@ class Setup < Thor
     else
       run('sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"')
     end
+    puts 'configuring macOS defaults'
+
+    # Dock
+    run('defaults write com.apple.dock autohide -bool true')
+    run('defaults write com.apple.dock tilesize -int 36')
+
+    # Finder
+    run('defaults write com.apple.finder ShowPathbar -bool true')
+    run('defaults write com.apple.finder ShowStatusBar -bool true')
+    run('defaults write NSGlobalDomain AppleShowAllExtensions -bool true')
+
+    # Screenshots
+    run('defaults write com.apple.screencapture location ~/Desktop')
+    run('defaults write com.apple.screencapture type png')
+
+    # Keyboard
+    run('defaults write NSGlobalDomain KeyRepeat -int 2')
+    run('defaults write NSGlobalDomain InitialKeyRepeat -int 15')
+
+    # Mouse - enable right click
+    run('defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode -string "TwoButton"')
+    run('defaults write com.apple.driver.AppleHIDMouse Button2 -int 1')
+
+    # Restart affected services
+    run('killall Dock')
+    run('killall Finder')
 
     puts 'all finished up!'
   end
